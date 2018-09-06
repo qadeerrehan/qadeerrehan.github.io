@@ -1,0 +1,5 @@
+<button class="collapsible"> </button>
+
+<div class="content">
+  <p> </p>
+</div>
