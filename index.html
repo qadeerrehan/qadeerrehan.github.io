@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Infected Blocks - Hardcore Audio</title>
+<title>Neon Blocks - Ultimate</title>
 
 <style>
 /* --- CORE STYLES --- */
@@ -30,12 +30,15 @@ input { touch-action: auto; }
 
 .game { 
     width:96vmin; max-width:480px; display:flex; flex-direction:column; 
-    height: 100vh; justify-content: center; position: relative;
-    padding-bottom: 20px; 
+    height: 100vh; 
+    justify-content: space-evenly; /* BETTER SPACING FIX */
+    align-items: center;
+    position: relative;
+    padding: 10px 0 20px 0;
 }
 
 /* --- HEADER --- */
-.header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; padding: 0 10px; height: 70px; width: 100%; z-index: 20; }
+.header { display:flex; justify-content:space-between; align-items:center; width: 100%; z-index: 20; padding: 0 10px; height: 60px; flex-shrink: 0; }
 .header-left { display: flex; align-items: center; gap: 12px; }
 
 /* BUTTONS */
@@ -94,6 +97,7 @@ input { touch-action: auto; }
   position: relative; z-index: 5;
   transition: transform 0.1s, box-shadow 0.3s, border-color 0.3s;
   border: 2px solid transparent;
+  flex-shrink: 0; /* Prevent board squishing */
 }
 .board.impact { transform: scale(0.98); }
 .board.danger {
@@ -116,24 +120,30 @@ input { touch-action: auto; }
 
 /* --- PIECES --- */
 .pieces { 
-    display:flex; justify-content:space-evenly; align-items: center; 
-    margin-top: 20px; height: 160px; width: 100%; 
-    padding-bottom: 20px; position: relative; z-index: 10;
+    display:flex; justify-content:space-evenly; align-items: flex-start; /* Align top to avoid bottom clipping */
+    width: 100%; 
+    min-height: 140px; /* Explicit height area */
+    padding-top: 10px;
+    position: relative; z-index: 10;
+    flex-shrink: 0;
 }
 .piece { 
-    display:grid; gap:3px; padding: 20px; 
+    display:grid; gap:3px; padding: 10px; 
     cursor: grab; touch-action: none; 
     transition: opacity 0.2s;
     animation: spawnUp 0.4s ease-out backwards; 
-    align-self: center; transform: scale(0.7); 
+    align-self: center; 
+    transform: scale(0.6); /* Reduced scale in tray so big blocks fit */
+    transform-origin: center center;
 }
-@keyframes spawnUp { from{ opacity:0; transform:translateY(30px) scale(0.6); } to{ opacity:1; transform:translateY(0) scale(0.7); } }
+@keyframes spawnUp { from{ opacity:0; transform:translateY(30px) scale(0.5); } to{ opacity:1; transform:translateY(0) scale(0.6); } }
 .piece:active { opacity: 0.6; }
 .piece.dragging { 
     position: fixed; pointer-events: none; z-index: 9999; 
     opacity: 1; cursor: grabbing; 
     filter: drop-shadow(0 25px 35px rgba(0,0,0,0.6)); 
-    transform: scale(1); margin: 0; padding: 0; 
+    transform: scale(1) !important; /* Full size when dragging */
+    margin: 0; padding: 0; 
 }
 .block { 
     width: var(--cell-size); height: var(--cell-size);
@@ -242,8 +252,8 @@ input[type=range]::-webkit-slider-runnable-track {
 
 <div id="homeScreen" class="overlay show">
     <div class="menu-box">
-        <h1 style="text-align:center; color: #fff; font-size: 3rem; margin-bottom: 5px; text-shadow: 0 0 20px rgba(255,255,255,0.5);">BLOCKS</h1>
-        <p style="text-align:center; color:#cbd5e1; margin-bottom: 25px; font-weight:bold; letter-spacing:2px; font-size: 0.9rem;">HARDCORE AUDIO</p>
+        <h1 style="text-align:center; color: #fff; font-size: 3rem; margin-bottom: 5px; text-shadow: 0 0 20px rgba(255,255,255,0.5);">NEON</h1>
+        <p style="text-align:center; color:#cbd5e1; margin-bottom: 25px; font-weight:bold; letter-spacing:2px; font-size: 0.9rem;">BLOCKS</p>
         
         <button id="resumeBtn" class="btn btn-action" onclick="resumeGame()" style="display:none; margin-bottom:20px;">▶ RESUME GAME</button>
         
@@ -345,6 +355,8 @@ input[type=range]::-webkit-slider-runnable-track {
 </div>
 
 <audio id="bg-music" src="bg.mp3" loop></audio>
+<audio id="sfx-rowmade" src="rowmade.wav" preload="auto"></audio>
+<audio id="sfx-placed" src="placed.mp3" preload="auto"></audio>
 
 <script>
 // --- GLOBAL CONFIG ---
@@ -352,20 +364,41 @@ const GRID_SIZE = 8;
 const TOTAL_CELLS = GRID_SIZE * GRID_SIZE;
 const MAX_GRACE = 2;
 
+// --- EXPANDED SHAPES (Added T, Z, Plus) ---
 const shapesMeta = [
+    // Basics
     { w: 2, s: [[0,0]] }, 
     { w: 2, s: [[0,0],[1,0]] }, { w: 2, s: [[0,0],[0,1]] }, 
+    
+    // Corners
     { w: 4, s: [[0,0],[1,0],[0,1]] }, 
+    
+    // Lines 3
     { w: 4, s: [[0,0],[1,0],[2,0]] }, { w: 4, s: [[0,0],[0,1],[0,2]] }, 
+    
+    // Lines 4
     { w: 3, s: [[0,0],[1,0],[2,0],[3,0]] }, { w: 3, s: [[0,0],[0,1],[0,2],[0,3]] }, 
+    
+    // L-Shapes
     { w: 3, s: [[0,0],[0,1],[0,2],[1,2]] }, { w: 3, s: [[1,0],[1,1],[1,2],[0,2]] }, 
     { w: 3, s: [[0,0],[1,0],[2,0],[0,1]] }, 
+    
+    // Square
     { w: 3, s: [[0,0],[1,0],[0,1],[1,1]] }, 
-    { w: 2, s: [[0,0],[1,0],[2,0],[0,1],[1,1],[2,1]] }, 
-    { w: 2, s: [[0,0],[1,0],[0,1],[1,1],[0,2],[1,2]] }, 
-    { w: 2, s: [[0,0],[1,0],[2,0],[3,0],[4,0]] }, 
-    { w: 2, s: [[0,0],[0,1],[0,2],[0,3],[0,4]] }, 
-    { w: 2, s: [[0,0],[1,0],[2,0], [0,1],[1,1],[2,1], [0,2],[1,2],[2,2]] } 
+    
+    // Big Blocks
+    { w: 2, s: [[0,0],[1,0],[2,0],[0,1],[1,1],[2,1]] }, // 2x3
+    { w: 2, s: [[0,0],[1,0],[0,1],[1,1],[0,2],[1,2]] }, // 3x2
+    { w: 2, s: [[0,0],[1,0],[2,0],[3,0],[4,0]] }, // 5-line H
+    { w: 2, s: [[0,0],[0,1],[0,2],[0,3],[0,4]] }, // 5-line V
+    { w: 2, s: [[0,0],[1,0],[2,0], [0,1],[1,1],[2,1], [0,2],[1,2],[2,2]] }, // 3x3
+
+    // NEW SHAPES
+    { w: 2, s: [[1,0],[0,1],[1,1],[2,1]] }, // T-Down
+    { w: 2, s: [[0,0],[1,0],[2,0],[1,1]] }, // T-Up
+    { w: 2, s: [[0,1],[1,1],[1,0],[2,0]] }, // Z-Shape
+    { w: 2, s: [[0,0],[1,0],[1,1],[2,1]] }, // S-Shape
+    { w: 2, s: [[1,0],[0,1],[1,1],[2,1],[1,2]] } // Plus (+)
 ];
 
 const themes = [
@@ -789,7 +822,8 @@ function addScore(pts) {
     const old = gameState.score;
     gameState.score += pts;
     updateScoreUI();
-    if(Math.floor(gameState.score/5000) > Math.floor(old/5000)) applyTheme((gameState.themeIndex+1)%themes.length);
+    // THEME CHANGE THRESHOLD: 10,000
+    if(Math.floor(gameState.score/10000) > Math.floor(old/10000)) applyTheme((gameState.themeIndex+1)%themes.length);
 }
 
 function updateScoreUI() {
@@ -983,7 +1017,6 @@ const sfx = {
     }
 };
 
-// Global UI Click Sound listener
 document.addEventListener('click', (e) => {
     if(e.target.closest('button') || e.target.closest('.switch') || e.target.closest('input[type=range]')) {
         sfx.click();
