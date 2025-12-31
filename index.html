@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Neon Blocks - Ultimate</title>
+<title>Neon Blocks - Colorful Edition</title>
 
 <style>
 /* --- CORE STYLES --- */
 :root {
-    --board-bg: #1e293b;
+    --board-bg: #0f172a;
     --accent: #3b82f6;
     --text-glow: #4facfe;
     --cell-size: 10.5vmin; 
@@ -29,46 +29,74 @@ body {
 input { touch-action: auto; }
 
 .game { 
-    width:96vmin; max-width:480px; display:flex; flex-direction:column; 
+    width:96vmin; max-width:480px; 
     height: 100vh; 
-    justify-content: space-evenly; /* BETTER SPACING FIX */
+    display: flex; flex-direction: column; 
     align-items: center;
     position: relative;
-    padding: 10px 0 20px 0;
+    justify-content: flex-start; 
+    gap: 15px; 
+    padding-top: 15px;
+    z-index: 10;
 }
 
 /* --- HEADER --- */
-.header { display:flex; justify-content:space-between; align-items:center; width: 100%; z-index: 20; padding: 0 10px; height: 60px; flex-shrink: 0; }
-.header-left { display: flex; align-items: center; gap: 12px; }
+.header { 
+    display:flex; justify-content:space-between; align-items:center; 
+    width: 100%; z-index: 20; padding: 0 10px; height: 80px; 
+    flex-shrink: 0; 
+}
+.header-left { display: flex; align-items: center; gap: 8px; }
 
-/* BUTTONS */
+/* BUTTONS with GLOW */
 .btn-icon {
     background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
     border-radius: 12px; width: 44px; height: 44px;
     display: flex; justify-content: center; align-items: center;
-    cursor: pointer; font-size: 1.4rem; transition: all 0.2s;
+    cursor: pointer; font-size: 1.4rem; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative; z-index: 100;
 }
-.btn-icon:active { transform: scale(0.9); background: rgba(255,255,255,0.2); }
+.btn-icon:active { transform: scale(0.9); background: rgba(255,255,255,0.3); box-shadow: 0 0 15px rgba(255,255,255,0.5); }
 
-/* STATS */
-.stats-container { display: flex; gap: 8px; }
+/* STATS BOXES */
+.stats-container { display: flex; gap: 10px; }
+
 .info-box { 
-    background: rgba(0, 0, 0, 0.4); padding: 5px 15px; border-radius: 14px; 
-    font-weight: bold; border: 1px solid rgba(255,255,255,0.1); 
-    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-    min-width: 80px; height: 60px;
-    position: relative;
+    background: rgba(15, 23, 42, 0.6); 
+    backdrop-filter: blur(8px);
+    padding: 5px 0; 
+    border-radius: 14px; 
+    border: 1px solid rgba(255,255,255,0.15); 
+    display: flex; flex-direction: column; align-items: center; 
+    justify-content: flex-start; 
+    width: 100px; height: 75px;
+    position: relative; overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
 }
-.info-box small { font-size: 0.6em; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
-.info-box span, .info-box div { font-size: 1.2rem; }
-.score-box.bump { transform: scale(1.1); color: var(--text-glow); transition: 0.1s; }
+
+.info-box small { 
+    font-size: 0.65rem; opacity: 0.8; 
+    text-transform: uppercase; letter-spacing: 1px; 
+    margin-top: 8px; margin-bottom: 2px;
+    color: #cbd5e1; font-weight: 700;
+}
+
+.info-box span, .info-box div#score, .info-box div#bestDisplay { 
+    font-size: 1.5rem; line-height: 1.2; font-weight: 800; z-index: 2;
+}
+
+#score {
+    background: linear-gradient(to bottom, #facc15, #f59e0b);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.3));
+}
+#bestDisplay { color: #a5b4fc; text-shadow: 0 0 10px rgba(165, 180, 252, 0.4); }
+.score-box.bump #score { transform: scale(1.2); transition: 0.1s; }
 
 /* COMBO BAR */
 .combo-bar-container {
-    position: absolute; bottom: 0; left: 0; width: 100%; height: 18px;
-    background: rgba(0,0,0,0.3); border-radius: 0 0 14px 14px; overflow: hidden;
-    opacity: 0; transition: opacity 0.3s;
+    position: absolute; bottom: 0; left: 0; width: 100%; height: 20px;
+    background: rgba(0,0,0,0.4); opacity: 0; transition: opacity 0.3s; z-index: 1;
 }
 .combo-bar-fill {
     height: 100%; width: 100%; background: #facc15;
@@ -76,8 +104,8 @@ input { touch-action: auto; }
     display: flex; align-items: center; justify-content: center;
 }
 .combo-text {
-    font-size: 0.75rem; color: #000; font-weight: 900; 
-    white-space: nowrap; letter-spacing: 0.5px;
+    font-size: 0.7rem; color: #000; font-weight: 900; 
+    white-space: nowrap; letter-spacing: 0.5px; line-height: 20px;
 }
 .combo-bar-fill.super { background: #ef4444; animation: superPulse 0.5s infinite alternate; }
 .combo-bar-fill.super .combo-text { color: #fff; }
@@ -96,8 +124,8 @@ input { touch-action: auto; }
   box-shadow: 0 0 40px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.3);
   position: relative; z-index: 5;
   transition: transform 0.1s, box-shadow 0.3s, border-color 0.3s;
-  border: 2px solid transparent;
-  flex-shrink: 0; /* Prevent board squishing */
+  border: 2px solid rgba(255,255,255,0.05);
+  flex-shrink: 0; 
 }
 .board.impact { transform: scale(0.98); }
 .board.danger {
@@ -105,6 +133,12 @@ input { touch-action: auto; }
     border-color: rgba(239, 68, 68, 0.6);
     animation: dangerPulse 2s infinite ease-in-out;
 }
+.board.combo-active {
+    border-color: rgba(250, 204, 21, 0.6);
+    box-shadow: 0 0 30px rgba(250, 204, 21, 0.2), inset 0 0 20px rgba(250, 204, 21, 0.1);
+    animation: comboGlow 1.5s infinite ease-in-out;
+}
+@keyframes comboGlow { 0%{border-color: rgba(250,204,21,0.3);} 50%{border-color: rgba(250,204,21,0.8);} 100%{border-color: rgba(250,204,21,0.3);} }
 @keyframes dangerPulse { 0%{ transform: scale(1); } 50%{ transform: scale(1.01); } 100%{ transform: scale(1); } }
 
 .cell { background:rgba(255,255,255,0.04); border-radius:6px; transition: background 0.3s ease; }
@@ -120,21 +154,17 @@ input { touch-action: auto; }
 
 /* --- PIECES --- */
 .pieces { 
-    display:flex; justify-content:space-evenly; align-items: flex-start; /* Align top to avoid bottom clipping */
-    width: 100%; 
-    min-height: 140px; /* Explicit height area */
-    padding-top: 10px;
-    position: relative; z-index: 10;
-    flex-shrink: 0;
+    display:flex; justify-content:space-evenly; align-items: flex-start;
+    width: 100%; height: 180px; min-height: 180px;
+    padding-top: 10px; position: relative; z-index: 10;
+    flex-shrink: 0; margin-top: auto; 
 }
 .piece { 
-    display:grid; gap:3px; padding: 10px; 
+    display:grid; gap:3px; padding: 24px; 
     cursor: grab; touch-action: none; 
     transition: opacity 0.2s;
     animation: spawnUp 0.4s ease-out backwards; 
-    align-self: center; 
-    transform: scale(0.6); /* Reduced scale in tray so big blocks fit */
-    transform-origin: center center;
+    align-self: center; transform: scale(0.6); transform-origin: center center;
 }
 @keyframes spawnUp { from{ opacity:0; transform:translateY(30px) scale(0.5); } to{ opacity:1; transform:translateY(0) scale(0.6); } }
 .piece:active { opacity: 0.6; }
@@ -142,8 +172,7 @@ input { touch-action: auto; }
     position: fixed; pointer-events: none; z-index: 9999; 
     opacity: 1; cursor: grabbing; 
     filter: drop-shadow(0 25px 35px rgba(0,0,0,0.6)); 
-    transform: scale(1) !important; /* Full size when dragging */
-    margin: 0; padding: 0; 
+    transform: scale(1) !important; margin: 0; padding: 0; 
 }
 .block { 
     width: var(--cell-size); height: var(--cell-size);
@@ -153,29 +182,80 @@ input { touch-action: auto; }
     pointer-events: none; transition: background 0.3s ease;
 }
 
-/* --- OVERLAYS --- */
+/* --- BACKGROUND ANIMATION --- */
+#homeScreen {
+    /* Colorful Gradient Background */
+    background: linear-gradient(120deg, #2e1065, #4c1d95, #be185d, #1e3a8a);
+    background-size: 400% 400%;
+    animation: auroraBG 15s ease infinite;
+}
+@keyframes auroraBG { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
+
+/* Floating Shapes */
+#bg-animation { position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.floating-shape {
+    position: absolute; display: block;
+    bottom: -100px;
+    animation: floatUp linear infinite;
+    opacity: 0.6;
+    border: 2px solid rgba(255,255,255,0.3);
+    box-shadow: 0 0 15px rgba(255,255,255,0.1);
+}
+.shape-square { width: 40px; height: 40px; border-radius: 6px; }
+.shape-circle { width: 40px; height: 40px; border-radius: 50%; }
+.shape-triangle {
+    width: 0; height: 0; border: none; box-shadow: none;
+    border-left: 25px solid transparent;
+    border-right: 25px solid transparent;
+    border-bottom: 40px solid rgba(255,255,255,0.3);
+    background: transparent;
+}
+
+@keyframes floatUp {
+    0% { transform: translateY(0) rotate(0deg) scale(0.8); opacity: 0; }
+    20% { opacity: 0.8; }
+    100% { transform: translateY(-110vh) rotate(360deg) scale(1.2); opacity: 0; }
+}
+
+/* --- MENUS --- */
 .overlay { 
-    position:fixed; inset:0; background:rgba(0, 0, 0, 0.9); display:none; 
+    position:fixed; inset:0; 
+    background: rgba(0, 0, 0, 0.4); /* Less dark to show color behind */
+    display:none; 
     justify-content:center; align-items:center; text-align:center; z-index: 5000; 
-    flex-direction: column; backdrop-filter: blur(15px);
+    flex-direction: column; 
+    backdrop-filter: blur(4px); /* Slight blur on overlay */
 }
 .overlay.show { display:flex; animation: fadeIn 0.3s; }
 
-#homeScreen {
-    background: linear-gradient(-45deg, #1e3a8a, #4c1d95, #831843, #0f172a);
-    background-size: 400% 400%; animation: gradientBG 10s ease infinite;
-}
-@keyframes gradientBG { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
-
 .menu-box {
-    background: rgba(15, 23, 42, 0.6); padding: 30px; border-radius: 24px;
-    border: 1px solid rgba(255,255,255,0.2); 
+    background: rgba(255, 255, 255, 0.1); /* Glassmorphism */
+    padding: 30px; border-radius: 24px;
+    border: 1px solid rgba(255,255,255,0.25); 
     box-shadow: 0 20px 50px rgba(0,0,0,0.5); width: 340px;
-    backdrop-filter: blur(20px); position: relative; z-index: 5001;
+    backdrop-filter: blur(20px); 
+    position: relative; z-index: 5001;
+    animation: zoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes zoomIn { from{transform:scale(0.8); opacity:0;} to{transform:scale(1); opacity:1;} }
+
+/* NEON TITLE */
+.neon-title {
+    font-size: 3.5rem; margin-bottom: 5px; font-weight: 900;
+    color: #fff; text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 40px #bc13fe, 0 0 80px #bc13fe;
+    animation: neonFlicker 3s infinite alternate;
+}
+@keyframes neonFlicker {
+    0%, 18%, 22%, 25%, 53%, 57%, 100% {
+        text-shadow: 0 0 4px #fff, 0 0 11px #fff, 0 0 19px #fff, 0 0 40px #bc13fe, 0 0 80px #bc13fe, 0 0 90px #bc13fe, 0 0 100px #bc13fe, 0 0 150px #bc13fe;
+    }
+    20%, 24%, 55% {
+        text-shadow: none; opacity: 0.5;
+    }
 }
 
 .mode-group { margin: 15px 0; }
-.mode-label { color: #94a3b8; font-size: 0.8rem; margin-bottom: 8px; letter-spacing: 1px; text-transform: uppercase; font-weight: bold; text-align: left; }
+.mode-label { color: #e2e8f0; font-size: 0.85rem; margin-bottom: 8px; letter-spacing: 1px; text-transform: uppercase; font-weight: bold; text-align: left; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
 .mode-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
 
 /* BUTTONS */
@@ -190,9 +270,13 @@ input { touch-action: auto; }
 .btn-play { 
     background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); 
     color: white; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); 
-    border: 1px solid rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
 }
-.btn-mode { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
+.btn-play:hover { filter: brightness(1.2); box-shadow: 0 0 25px rgba(59, 130, 246, 0.6); }
+
+.btn-mode { background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(4px); }
+.btn-mode:hover { background: rgba(255,255,255,0.25); }
+
 .btn-action { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
 
 /* SETTINGS & TOGGLES */
@@ -206,17 +290,13 @@ input:checked + .slider { background-color: #10b981; }
 input:checked + .slider:before { transform: translateX(24px); }
 
 /* RANGE SLIDER */
-input[type=range] {
-  -webkit-appearance: none; width: 100%; background: transparent;
-}
+input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
 input[type=range]::-webkit-slider-thumb {
   -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%;
   background: #3b82f6; cursor: pointer; margin-top: -8px;
   box-shadow: 0 0 10px rgba(59,130,246,0.5);
 }
-input[type=range]::-webkit-slider-runnable-track {
-  width: 100%; height: 4px; cursor: pointer; background: rgba(255,255,255,0.2); border-radius: 2px;
-}
+input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: rgba(255,255,255,0.2); border-radius: 2px; }
 
 /* HIGHSCORES */
 #highscoreScreen { z-index: 6000; }
@@ -226,12 +306,11 @@ input[type=range]::-webkit-slider-runnable-track {
 /* VISUAL FX */
 .cheer-text {
     position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);
-    font-size: 2.5rem; font-weight: 900; color: #fff; 
-    text-shadow: 0 0 20px var(--accent);
+    font-size: 3rem; font-weight: 900; color: #fff; 
+    text-shadow: 0 0 10px #fff, 0 0 20px var(--accent);
     pointer-events: none; z-index: 2000; white-space: nowrap; text-align: center; width: 100%;
     animation: cheerPop 2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
-.combo-sub { font-size: 1.2rem; color: #facc15; display: block; margin-top: 5px; letter-spacing: 3px;}
 @keyframes cheerPop { 0% { transform: translate(-50%, -50%) scale(0) rotate(-5deg); opacity: 0; } 15% { transform: translate(-50%, -50%) scale(1.2) rotate(0deg); opacity: 1; } 100% { transform: translate(-50%, -150%) scale(1.5); opacity: 0; } }
 @keyframes fadeIn { from{opacity:0} to{opacity:1} }
 .shake { animation: shake 0.3s; }
@@ -251,9 +330,9 @@ input[type=range]::-webkit-slider-runnable-track {
 <body>
 
 <div id="homeScreen" class="overlay show">
-    <div class="menu-box">
-        <h1 style="text-align:center; color: #fff; font-size: 3rem; margin-bottom: 5px; text-shadow: 0 0 20px rgba(255,255,255,0.5);">NEON</h1>
-        <p style="text-align:center; color:#cbd5e1; margin-bottom: 25px; font-weight:bold; letter-spacing:2px; font-size: 0.9rem;">BLOCKS</p>
+    <div id="bg-animation"></div> <div class="menu-box">
+        <h1 class="neon-title" style="text-align:center;">NEON</h1>
+        <p style="text-align:center; color:#e2e8f0; margin-bottom: 25px; font-weight:bold; letter-spacing:4px; font-size: 1rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">BLOCKS</p>
         
         <button id="resumeBtn" class="btn btn-action" onclick="resumeGame()" style="display:none; margin-bottom:20px;">▶ RESUME GAME</button>
         
@@ -324,10 +403,16 @@ input[type=range]::-webkit-slider-runnable-track {
     </div>
     
     <div class="stats-container">
+        <div class="info-box" id="bestScoreBox">
+            <small>BEST</small>
+            <span id="bestDisplay">0</span>
+        </div>
+
         <div class="info-box" id="timerBox" style="display:none;">
             <small>TIME</small>
             <span id="timerDisplay">00:00</span>
         </div>
+
         <div class="info-box score-box" id="scoreBox">
             <small>SCORE</small>
             <div id="score">0</div>
@@ -347,7 +432,7 @@ input[type=range]::-webkit-slider-runnable-track {
 <div id="gameOver" class="overlay">
     <div class="menu-box" style="text-align:center;">
         <h1 style="font-size:2.5rem; margin-bottom:10px; color: #ef4444;">GAME OVER</h1>
-        <p id="overReason" style="color:#94a3b8; margin-bottom: 20px; font-size: 1.2rem;">No Moves Left</p>
+        <p id="overReason" style="color:#e2e8f0; margin-bottom: 20px; font-size: 1.2rem;">No Moves Left</p>
         <p style="font-size:1.5rem; color:#fff; margin-bottom:30px">Score: <span id="finalScore" style="color: #facc15; font-weight:bold;">0</span></p>
         <button class="btn btn-play" onclick="startNewGame(gameState.mode, gameState.timeTotal)">Try Again</button>
         <button class="btn btn-mode" style="margin-top:10px" onclick="openHome()">Main Menu</button>
@@ -364,41 +449,26 @@ const GRID_SIZE = 8;
 const TOTAL_CELLS = GRID_SIZE * GRID_SIZE;
 const MAX_GRACE = 2;
 
-// --- EXPANDED SHAPES (Added T, Z, Plus) ---
+// --- SHAPES ---
 const shapesMeta = [
-    // Basics
     { w: 2, s: [[0,0]] }, 
     { w: 2, s: [[0,0],[1,0]] }, { w: 2, s: [[0,0],[0,1]] }, 
-    
-    // Corners
     { w: 4, s: [[0,0],[1,0],[0,1]] }, 
-    
-    // Lines 3
     { w: 4, s: [[0,0],[1,0],[2,0]] }, { w: 4, s: [[0,0],[0,1],[0,2]] }, 
-    
-    // Lines 4
     { w: 3, s: [[0,0],[1,0],[2,0],[3,0]] }, { w: 3, s: [[0,0],[0,1],[0,2],[0,3]] }, 
-    
-    // L-Shapes
     { w: 3, s: [[0,0],[0,1],[0,2],[1,2]] }, { w: 3, s: [[1,0],[1,1],[1,2],[0,2]] }, 
     { w: 3, s: [[0,0],[1,0],[2,0],[0,1]] }, 
-    
-    // Square
     { w: 3, s: [[0,0],[1,0],[0,1],[1,1]] }, 
-    
-    // Big Blocks
-    { w: 2, s: [[0,0],[1,0],[2,0],[0,1],[1,1],[2,1]] }, // 2x3
-    { w: 2, s: [[0,0],[1,0],[0,1],[1,1],[0,2],[1,2]] }, // 3x2
-    { w: 2, s: [[0,0],[1,0],[2,0],[3,0],[4,0]] }, // 5-line H
-    { w: 2, s: [[0,0],[0,1],[0,2],[0,3],[0,4]] }, // 5-line V
-    { w: 2, s: [[0,0],[1,0],[2,0], [0,1],[1,1],[2,1], [0,2],[1,2],[2,2]] }, // 3x3
-
-    // NEW SHAPES
-    { w: 2, s: [[1,0],[0,1],[1,1],[2,1]] }, // T-Down
-    { w: 2, s: [[0,0],[1,0],[2,0],[1,1]] }, // T-Up
-    { w: 2, s: [[0,1],[1,1],[1,0],[2,0]] }, // Z-Shape
-    { w: 2, s: [[0,0],[1,0],[1,1],[2,1]] }, // S-Shape
-    { w: 2, s: [[1,0],[0,1],[1,1],[2,1],[1,2]] } // Plus (+)
+    { w: 2, s: [[0,0],[1,0],[2,0],[0,1],[1,1],[2,1]] }, 
+    { w: 2, s: [[0,0],[1,0],[0,1],[1,1],[0,2],[1,2]] }, 
+    { w: 2, s: [[0,0],[1,0],[2,0],[3,0],[4,0]] }, 
+    { w: 2, s: [[0,0],[0,1],[0,2],[0,3],[0,4]] }, 
+    { w: 2, s: [[0,0],[1,0],[2,0], [0,1],[1,1],[2,1], [0,2],[1,2],[2,2]] }, 
+    { w: 2, s: [[1,0],[0,1],[1,1],[2,1]] }, 
+    { w: 2, s: [[0,0],[1,0],[2,0],[1,1]] }, 
+    { w: 2, s: [[0,1],[1,1],[1,0],[2,0]] }, 
+    { w: 2, s: [[0,0],[1,0],[1,1],[2,1]] }, 
+    { w: 2, s: [[1,0],[0,1],[1,1],[2,1],[1,2]] } 
 ];
 
 const themes = [
@@ -435,7 +505,6 @@ function initAudio() {
     }
     if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
     
-    // Auto-start music if toggle is on (Browser requires interaction first)
     if(document.getElementById("musicToggle").checked) {
         bgMusic.play().catch(e => console.log("Audio waiting for interaction"));
     }
@@ -470,6 +539,9 @@ for(let i=0; i<TOTAL_CELLS; i++){
     board.appendChild(c);
 }
 
+// Init Floating Background
+initFloatingBlocks();
+
 const savedRaw = localStorage.getItem('farooqBlocksSave');
 if(savedRaw) {
     const saved = JSON.parse(savedRaw);
@@ -481,6 +553,32 @@ if(savedRaw) {
 /* =========================================
    GAME FUNCTIONS
    ========================================= */
+
+function initFloatingBlocks() {
+    const container = document.getElementById('bg-animation');
+    const colors = ['#3b82f6', '#ef4444', '#22c55e', '#eab308', '#a855f7'];
+    const types = ['shape-square', 'shape-circle', 'shape-triangle'];
+    
+    for(let i=0; i<15; i++) {
+        const b = document.createElement('div');
+        b.className = 'floating-shape ' + types[Math.floor(Math.random()*types.length)];
+        b.style.left = Math.random() * 90 + '%';
+        b.style.animationDuration = (Math.random() * 10 + 10) + 's';
+        b.style.animationDelay = (Math.random() * 5) + 's';
+        
+        // Color logic
+        const col = colors[Math.floor(Math.random() * colors.length)];
+        if(!b.classList.contains('shape-triangle')) {
+            b.style.borderColor = col;
+        } else {
+            b.style.borderBottomColor = col;
+        }
+        
+        const s = Math.random() * 0.5 + 0.5;
+        b.style.transform = `scale(${s})`;
+        container.appendChild(b);
+    }
+}
 
 function startNewGame(mode = 'classic', time = 0) {
     initAudio(); 
@@ -507,6 +605,7 @@ function startNewGame(mode = 'classic', time = 0) {
     });
     
     checkDanger();
+    updateBestScoreUI(); // Init Best Score
     updateScoreUI();
     setupTimerUI();
     applyTheme(0);
@@ -534,6 +633,7 @@ function resumeGame() {
     
     checkDanger();
     applyTheme(gameState.themeIndex);
+    updateBestScoreUI();
     updateScoreUI();
     setupTimerUI();
     newPieces();
@@ -833,7 +933,17 @@ function updateScoreUI() {
     void el.parentElement.offsetWidth;
     el.parentElement.classList.add("bump");
 
+    // Live update Best Score if beaten
+    const hs = JSON.parse(localStorage.getItem('farooqHighscores')) || {};
+    const key = gameState.mode === 'time' ? `time${gameState.timeTotal}` : 'classic';
+    const currentBest = hs[key] || 0;
+    if(gameState.score > currentBest) {
+        document.getElementById("bestDisplay").textContent = gameState.score;
+    }
+
+    // Combo Logic
     if(gameState.combo > 1) {
+        board.classList.add('combo-active'); // PULSE EFFECT
         comboBarWrap.style.opacity = 1;
         const pct = (gameState.comboGrace / MAX_GRACE) * 100;
         comboBar.style.width = pct + "%";
@@ -851,8 +961,15 @@ function updateScoreUI() {
         
         comboText.textContent = `${displayMult}x`;
     } else {
+        board.classList.remove('combo-active');
         comboBarWrap.style.opacity = 0;
     }
+}
+
+function updateBestScoreUI() {
+    const hs = JSON.parse(localStorage.getItem('farooqHighscores')) || {};
+    const key = gameState.mode === 'time' ? `time${gameState.timeTotal}` : 'classic';
+    document.getElementById("bestDisplay").textContent = hs[key] || 0;
 }
 
 function showFloatText(txt) {
@@ -917,6 +1034,7 @@ function gameOver(msg) {
         hs[key] = gameState.score;
         localStorage.setItem('farooqHighscores', JSON.stringify(hs));
     }
+    updateBestScoreUI();
 }
 
 function saveGame() {
