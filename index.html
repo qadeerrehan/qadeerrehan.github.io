@@ -3,22 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Neon Blocks - Colorful Edition</title>
+<title>Neon Blocks - One Handed</title>
 
 <style>
 /* --- CORE STYLES --- */
 :root {
-    --board-bg: #0f172a;
+    --board-bg: #1e293b;
     --accent: #3b82f6;
     --text-glow: #4facfe;
-    --cell-size: 10.5vmin; 
-    --max-cell-size: 55px; 
 }
 
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
 
 body { 
-    height:100vh; display:flex; justify-content:center; align-items:center; 
+    height:100vh; width: 100vw; 
+    display:flex; justify-content:center; align-items:center; 
     background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
     color:#fff; overflow:hidden;
     overscroll-behavior: none;
@@ -26,64 +25,43 @@ body {
     touch-action: none; 
 }
 
-input { touch-action: auto; }
-
+/* --- MAIN LAYOUT (Smart Flexbox) --- */
 .game { 
-    width:96vmin; max-width:480px; 
-    height: 100vh; 
+    width: 100%; height: 100%;
     display: flex; flex-direction: column; 
+    justify-content: space-between; /* Distribute space evenly */
     align-items: center;
     position: relative;
-    justify-content: flex-start; 
-    gap: 15px; 
-    padding-top: 15px;
+    padding: 10px 0 20px 0;
     z-index: 10;
 }
 
-/* --- HEADER --- */
+/* --- HEADER (Top) --- */
 .header { 
     display:flex; justify-content:space-between; align-items:center; 
-    width: 100%; z-index: 20; padding: 0 10px; height: 80px; 
-    flex-shrink: 0; 
+    width: 96%; height: 80px; z-index: 20; 
 }
 .header-left { display: flex; align-items: center; gap: 8px; }
 
-/* BUTTONS with GLOW */
 .btn-icon {
     background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
     border-radius: 12px; width: 44px; height: 44px;
     display: flex; justify-content: center; align-items: center;
-    cursor: pointer; font-size: 1.4rem; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative; z-index: 100;
+    cursor: pointer; font-size: 1.4rem; transition: all 0.2s;
 }
-.btn-icon:active { transform: scale(0.9); background: rgba(255,255,255,0.3); box-shadow: 0 0 15px rgba(255,255,255,0.5); }
+.btn-icon:active { transform: scale(0.9); background: rgba(255,255,255,0.3); }
 
-/* STATS BOXES */
+/* STATS */
 .stats-container { display: flex; gap: 10px; }
-
 .info-box { 
-    background: rgba(15, 23, 42, 0.6); 
-    backdrop-filter: blur(8px);
-    padding: 5px 0; 
-    border-radius: 14px; 
-    border: 1px solid rgba(255,255,255,0.15); 
-    display: flex; flex-direction: column; align-items: center; 
-    justify-content: flex-start; 
-    width: 100px; height: 75px;
+    background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px);
+    border-radius: 14px; border: 1px solid rgba(255,255,255,0.15); 
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start; 
+    width: 90px; height: 70px; padding-top: 5px;
     position: relative; overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
 }
-
-.info-box small { 
-    font-size: 0.65rem; opacity: 0.8; 
-    text-transform: uppercase; letter-spacing: 1px; 
-    margin-top: 8px; margin-bottom: 2px;
-    color: #cbd5e1; font-weight: 700;
-}
-
-.info-box span, .info-box div#score, .info-box div#bestDisplay { 
-    font-size: 1.5rem; line-height: 1.2; font-weight: 800; z-index: 2;
-}
+.info-box small { font-size: 0.6rem; opacity: 0.8; font-weight: 700; color: #cbd5e1; margin-bottom: 2px; }
+.info-box span, #score { font-size: 1.4rem; font-weight: 800; z-index: 2; line-height: 1.2; }
 
 #score {
     background: linear-gradient(to bottom, #facc15, #f59e0b);
@@ -95,122 +73,124 @@ input { touch-action: auto; }
 
 /* COMBO BAR */
 .combo-bar-container {
-    position: absolute; bottom: 0; left: 0; width: 100%; height: 20px;
-    background: rgba(0,0,0,0.4); opacity: 0; transition: opacity 0.3s; z-index: 1;
+    position: absolute; bottom: 0; left: 0; width: 100%; height: 18px;
+    background: rgba(0,0,0,0.4); opacity: 0; transition: opacity 0.3s;
 }
 .combo-bar-fill {
     height: 100%; width: 100%; background: #facc15;
-    transition: width 0.3s ease, background 0.3s;
-    display: flex; align-items: center; justify-content: center;
+    transition: width 0.3s ease; display: flex; align-items: center; justify-content: center;
 }
-.combo-text {
-    font-size: 0.7rem; color: #000; font-weight: 900; 
-    white-space: nowrap; letter-spacing: 0.5px; line-height: 20px;
-}
+.combo-text { font-size: 0.65rem; color: #000; font-weight: 900; line-height: 18px; }
 .combo-bar-fill.super { background: #ef4444; animation: superPulse 0.5s infinite alternate; }
 .combo-bar-fill.super .combo-text { color: #fff; }
 @keyframes superPulse { from{box-shadow: 0 0 5px #ef4444;} to{box-shadow: 0 0 15px #facc15;} }
 
-#timerBox { color: #fff; transition: color 0.3s; }
-#timerBox.urgent { color: #ef4444; animation: pulse 0.5s infinite; }
-@keyframes pulse { 0%{opacity:1} 50%{opacity:0.5} 100%{opacity:1} }
+/* --- BOARD (Middle - Fixed Size Logic) --- */
+.board-container {
+    flex-grow: 1; /* Take available space */
+    display: flex; justify-content: center; align-items: center;
+    width: 100%;
+}
 
-/* --- BOARD --- */
 .board {
   display:grid; gap:3px; padding:6px;
   background: var(--board-bg);
   border-radius: 16px;
-  width:100%; aspect-ratio:1;
+  /* Smart sizing: 96% width, but NEVER taller than 55% of screen height */
+  width: 94vmin; height: 94vmin;
+  max-width: 55vh; max-height: 55vh; 
+  
   box-shadow: 0 0 40px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.3);
   position: relative; z-index: 5;
-  transition: transform 0.1s, box-shadow 0.3s, border-color 0.3s;
+  transition: transform 0.1s;
   border: 2px solid rgba(255,255,255,0.05);
-  flex-shrink: 0; 
 }
 .board.impact { transform: scale(0.98); }
 .board.danger {
-    box-shadow: 0 0 50px rgba(239, 68, 68, 0.4), inset 0 0 30px rgba(239, 68, 68, 0.1);
     border-color: rgba(239, 68, 68, 0.6);
+    box-shadow: 0 0 50px rgba(239, 68, 68, 0.4);
     animation: dangerPulse 2s infinite ease-in-out;
 }
 .board.combo-active {
     border-color: rgba(250, 204, 21, 0.6);
-    box-shadow: 0 0 30px rgba(250, 204, 21, 0.2), inset 0 0 20px rgba(250, 204, 21, 0.1);
+    box-shadow: 0 0 30px rgba(250, 204, 21, 0.2);
     animation: comboGlow 1.5s infinite ease-in-out;
 }
-@keyframes comboGlow { 0%{border-color: rgba(250,204,21,0.3);} 50%{border-color: rgba(250,204,21,0.8);} 100%{border-color: rgba(250,204,21,0.3);} }
-@keyframes dangerPulse { 0%{ transform: scale(1); } 50%{ transform: scale(1.01); } 100%{ transform: scale(1); } }
+@keyframes comboGlow { 0%,100%{border-color:rgba(250,204,21,0.3);} 50%{border-color:rgba(250,204,21,0.8);} }
+@keyframes dangerPulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.01);} }
 
-.cell { background:rgba(255,255,255,0.04); border-radius:6px; transition: background 0.3s ease; }
+.cell { background:rgba(255,255,255,0.04); border-radius:6px; transition: background 0.3s; }
 .cell.filled { 
     box-shadow: inset 0 0 10px rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1); 
-    animation: fillPop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: fillPop 0.2s;
 }
 @keyframes fillPop { 0%{transform:scale(0);} 100%{transform:scale(1);} }
-.cell-shadow { 
-    background: rgba(255, 255, 255, 0.2) !important; 
-    border-radius: 6px; transform: scale(0.9); transition: transform 0.1s;
+.cell-shadow { background: rgba(255, 255, 255, 0.2) !important; border-radius: 6px; transform: scale(0.9); }
+
+/* --- PIECES TRAY (Bottom - Fixed Height) --- */
+.pieces { 
+    display:flex; justify-content:space-evenly; align-items: center;
+    width: 100%; 
+    height: 22vh; /* Dedicated 22% screen height */
+    min-height: 140px;
+    background: rgba(0,0,0,0.2); /* Slight tint to show area */
+    border-top: 1px solid rgba(255,255,255,0.05);
+    z-index: 10;
 }
 
-/* --- PIECES --- */
-.pieces { 
-    display:flex; justify-content:space-evenly; align-items: flex-start;
-    width: 100%; height: 180px; min-height: 180px;
-    padding-top: 10px; position: relative; z-index: 10;
-    flex-shrink: 0; margin-top: auto; 
-}
 .piece { 
-    display:grid; gap:3px; padding: 24px; 
-    cursor: grab; touch-action: none; 
+    display:grid; gap:3px; 
+    padding: 20px; /* Large touch area */
+    cursor: grab; 
     transition: opacity 0.2s;
     animation: spawnUp 0.4s ease-out backwards; 
-    align-self: center; transform: scale(0.6); transform-origin: center center;
+    align-self: center; 
+    /* Default shrinkage for tray */
+    transform: scale(0.55); 
+    transform-origin: center center;
 }
-@keyframes spawnUp { from{ opacity:0; transform:translateY(30px) scale(0.5); } to{ opacity:1; transform:translateY(0) scale(0.6); } }
-.piece:active { opacity: 0.6; }
+
+/* AUTO-SHRINK LOGIC: CSS class added via JS for massive blocks */
+.piece.huge { transform: scale(0.45); } 
+
+@keyframes spawnUp { from{ opacity:0; transform:translateY(30px) scale(0.4); } to{ opacity:1; transform:translateY(0) scale(0.55); } }
+
+/* DRAGGING STATE */
 .piece.dragging { 
     position: fixed; pointer-events: none; z-index: 9999; 
     opacity: 1; cursor: grabbing; 
-    filter: drop-shadow(0 25px 35px rgba(0,0,0,0.6)); 
-    transform: scale(1) !important; margin: 0; padding: 0; 
+    filter: drop-shadow(0 30px 40px rgba(0,0,0,0.6)); 
+    transform: scale(1) !important; /* Full size when dragging */
+    margin: 0; padding: 0; /* Remove padding for precision */
 }
+
 .block { 
-    width: var(--cell-size); height: var(--cell-size);
-    max-width: var(--max-cell-size); max-height: var(--max-cell-size);
+    width: calc(55vh / 8 - 4px); height: calc(55vh / 8 - 4px); /* Responsive block size based on board max-height */
+    max-width: 42px; max-height: 42px; /* Cap size */
     border-radius: 6px; 
     box-shadow: inset 0 2px 5px rgba(255,255,255,0.4), inset 0 -2px 5px rgba(0,0,0,0.2); 
-    pointer-events: none; transition: background 0.3s ease;
 }
 
 /* --- BACKGROUND ANIMATION --- */
 #homeScreen {
-    /* Colorful Gradient Background */
     background: linear-gradient(120deg, #2e1065, #4c1d95, #be185d, #1e3a8a);
-    background-size: 400% 400%;
-    animation: auroraBG 15s ease infinite;
+    background-size: 400% 400%; animation: auroraBG 15s ease infinite;
 }
 @keyframes auroraBG { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
 
-/* Floating Shapes */
 #bg-animation { position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
 .floating-shape {
-    position: absolute; display: block;
-    bottom: -100px;
+    position: absolute; display: block; bottom: -100px; opacity: 0.6;
     animation: floatUp linear infinite;
-    opacity: 0.6;
-    border: 2px solid rgba(255,255,255,0.3);
-    box-shadow: 0 0 15px rgba(255,255,255,0.1);
+    border: 2px solid rgba(255,255,255,0.3); box-shadow: 0 0 15px rgba(255,255,255,0.1);
 }
 .shape-square { width: 40px; height: 40px; border-radius: 6px; }
 .shape-circle { width: 40px; height: 40px; border-radius: 50%; }
 .shape-triangle {
     width: 0; height: 0; border: none; box-shadow: none;
-    border-left: 25px solid transparent;
-    border-right: 25px solid transparent;
+    border-left: 25px solid transparent; border-right: 25px solid transparent;
     border-bottom: 40px solid rgba(255,255,255,0.3);
-    background: transparent;
 }
-
 @keyframes floatUp {
     0% { transform: translateY(0) rotate(0deg) scale(0.8); opacity: 0; }
     20% { opacity: 0.8; }
@@ -219,97 +199,60 @@ input { touch-action: auto; }
 
 /* --- MENUS --- */
 .overlay { 
-    position:fixed; inset:0; 
-    background: rgba(0, 0, 0, 0.4); /* Less dark to show color behind */
-    display:none; 
-    justify-content:center; align-items:center; text-align:center; z-index: 5000; 
-    flex-direction: column; 
-    backdrop-filter: blur(4px); /* Slight blur on overlay */
+    position:fixed; inset:0; background: rgba(0, 0, 0, 0.4); 
+    display:none; justify-content:center; align-items:center; z-index: 5000; 
+    flex-direction: column; backdrop-filter: blur(4px);
 }
 .overlay.show { display:flex; animation: fadeIn 0.3s; }
 
 .menu-box {
-    background: rgba(255, 255, 255, 0.1); /* Glassmorphism */
-    padding: 30px; border-radius: 24px;
-    border: 1px solid rgba(255,255,255,0.25); 
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5); width: 340px;
-    backdrop-filter: blur(20px); 
-    position: relative; z-index: 5001;
-    animation: zoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background: rgba(255, 255, 255, 0.1); 
+    padding: 30px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.25); 
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5); width: 340px; backdrop-filter: blur(20px); 
+    position: relative; z-index: 5001; animation: zoomIn 0.3s;
 }
 @keyframes zoomIn { from{transform:scale(0.8); opacity:0;} to{transform:scale(1); opacity:1;} }
 
-/* NEON TITLE */
 .neon-title {
-    font-size: 3.5rem; margin-bottom: 5px; font-weight: 900;
-    color: #fff; text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 40px #bc13fe, 0 0 80px #bc13fe;
+    font-size: 3.5rem; margin-bottom: 5px; font-weight: 900; color: #fff; text-align: center;
+    text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 40px #bc13fe, 0 0 80px #bc13fe;
     animation: neonFlicker 3s infinite alternate;
 }
 @keyframes neonFlicker {
-    0%, 18%, 22%, 25%, 53%, 57%, 100% {
-        text-shadow: 0 0 4px #fff, 0 0 11px #fff, 0 0 19px #fff, 0 0 40px #bc13fe, 0 0 80px #bc13fe, 0 0 90px #bc13fe, 0 0 100px #bc13fe, 0 0 150px #bc13fe;
-    }
-    20%, 24%, 55% {
-        text-shadow: none; opacity: 0.5;
-    }
+    0%, 18%, 22%, 25%, 53%, 57%, 100% { text-shadow: 0 0 4px #fff, 0 0 11px #fff, 0 0 19px #fff, 0 0 40px #bc13fe, 0 0 80px #bc13fe, 0 0 90px #bc13fe; }
+    20%, 24%, 55% { text-shadow: none; opacity: 0.5; }
 }
-
-.mode-group { margin: 15px 0; }
-.mode-label { color: #e2e8f0; font-size: 0.85rem; margin-bottom: 8px; letter-spacing: 1px; text-transform: uppercase; font-weight: bold; text-align: left; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-.mode-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
 
 /* BUTTONS */
 .btn {
-    border: none; border-radius: 12px; padding: 14px;
-    font-weight: 800; font-size: 1rem; cursor: pointer;
-    transition: transform 0.1s, filter 0.2s, box-shadow 0.2s; width: 100%;
-    text-transform: uppercase; letter-spacing: 0.5px;
-    position: relative; overflow: hidden;
+    border: none; border-radius: 12px; padding: 14px; font-weight: 800; font-size: 1rem; cursor: pointer;
+    transition: transform 0.1s, filter 0.2s; width: 100%; text-transform: uppercase; letter-spacing: 0.5px;
+    margin-bottom: 8px;
 }
 .btn:active { transform: scale(0.96); }
-.btn-play { 
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); 
-    color: white; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); 
-    border: 1px solid rgba(255,255,255,0.2);
-}
-.btn-play:hover { filter: brightness(1.2); box-shadow: 0 0 25px rgba(59, 130, 246, 0.6); }
-
-.btn-mode { background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(4px); }
-.btn-mode:hover { background: rgba(255,255,255,0.25); }
-
-.btn-action { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
+.btn-play { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; border: 1px solid rgba(255,255,255,0.2); }
+.btn-mode { background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+.btn-action { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; }
 
 /* SETTINGS & TOGGLES */
-#settingsOverlay { z-index: 6000; }
-.settings-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-weight: bold; font-size: 1.1rem; color: #fff; }
+.settings-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-weight: bold; color: #fff; }
 .switch { position: relative; display: inline-block; width: 52px; height: 28px; }
 .switch input { opacity: 0; width: 0; height: 0; }
 .slider { position: absolute; cursor: pointer; inset: 0; background-color: #475569; border-radius: 34px; transition: .3s; }
 .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 3px; bottom: 3px; background-color: white; border-radius: 50%; transition: .3s; }
 input:checked + .slider { background-color: #10b981; }
 input:checked + .slider:before { transform: translateX(24px); }
-
-/* RANGE SLIDER */
 input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
-input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%;
-  background: #3b82f6; cursor: pointer; margin-top: -8px;
-  box-shadow: 0 0 10px rgba(59,130,246,0.5);
-}
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; background: #3b82f6; cursor: pointer; margin-top: -8px; }
 input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: rgba(255,255,255,0.2); border-radius: 2px; }
 
-/* HIGHSCORES */
-#highscoreScreen { z-index: 6000; }
-.hs-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 1.1rem; color: #fff; }
-.hs-row span:nth-child(2) { color: #facc15; font-weight: bold; font-family: monospace; font-size: 1.3rem; }
-
-/* VISUAL FX */
+/* EXTRA UI */
 .cheer-text {
     position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);
     font-size: 3rem; font-weight: 900; color: #fff; 
     text-shadow: 0 0 10px #fff, 0 0 20px var(--accent);
-    pointer-events: none; z-index: 2000; white-space: nowrap; text-align: center; width: 100%;
-    animation: cheerPop 2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    pointer-events: none; z-index: 2000; white-space: nowrap; text-align: center;
+    animation: cheerPop 2s forwards;
 }
 @keyframes cheerPop { 0% { transform: translate(-50%, -50%) scale(0) rotate(-5deg); opacity: 0; } 15% { transform: translate(-50%, -50%) scale(1.2) rotate(0deg); opacity: 1; } 100% { transform: translate(-50%, -150%) scale(1.5); opacity: 0; } }
 @keyframes fadeIn { from{opacity:0} to{opacity:1} }
@@ -317,11 +260,7 @@ input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cur
 @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
 .confetti-particle { position: fixed; width: 10px; height: 10px; z-index: 9999; pointer-events: none; }
 @keyframes confettiDrop { 0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
-.float-text {
-    position: absolute; font-weight:bold; color: #22c55e;
-    font-size: 1.2rem; pointer-events: none; z-index: 3000;
-    animation: floatUp 1s forwards; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-}
+.float-text { position: absolute; font-weight:bold; color: #22c55e; font-size: 1.2rem; pointer-events: none; z-index: 3000; animation: floatUp 1s forwards; }
 @keyframes floatUp { 0%{opacity:1; transform:translateY(0);} 100%{opacity:0; transform:translateY(-40px);} }
 
 </style>
@@ -330,20 +269,21 @@ input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cur
 <body>
 
 <div id="homeScreen" class="overlay show">
-    <div id="bg-animation"></div> <div class="menu-box">
-        <h1 class="neon-title" style="text-align:center;">NEON</h1>
-        <p style="text-align:center; color:#e2e8f0; margin-bottom: 25px; font-weight:bold; letter-spacing:4px; font-size: 1rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">BLOCKS</p>
+    <div id="bg-animation"></div>
+    <div class="menu-box">
+        <h1 class="neon-title">NEON</h1>
+        <p style="text-align:center; color:#e2e8f0; margin-bottom: 25px; font-weight:bold; letter-spacing:4px; font-size: 1rem;">BLOCKS</p>
         
         <button id="resumeBtn" class="btn btn-action" onclick="resumeGame()" style="display:none; margin-bottom:20px;">▶ RESUME GAME</button>
         
         <div class="mode-group">
-            <div class="mode-label">Classic Mode</div>
+            <div style="color:#cbd5e1; font-weight:bold; margin-bottom:5px; font-size:0.8rem; text-transform:uppercase;">Classic Mode</div>
             <button class="btn btn-play" onclick="startNewGame('classic')">∞ Endless Play</button>
         </div>
 
         <div class="mode-group">
-            <div class="mode-label">Clock Rush</div>
-            <div class="mode-grid">
+            <div style="color:#cbd5e1; font-weight:bold; margin-bottom:5px; font-size:0.8rem; text-transform:uppercase;">Clock Rush</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px;">
                 <button class="btn btn-mode" onclick="startNewGame('time', 60)">1m</button>
                 <button class="btn btn-mode" onclick="startNewGame('time', 180)">3m</button>
                 <button class="btn btn-mode" onclick="startNewGame('time', 300)">5m</button>
@@ -425,7 +365,10 @@ input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cur
     </div>
   </div>
 
-  <div id="board" class="board"></div>
+  <div class="board-container">
+      <div id="board" class="board"></div>
+  </div>
+  
   <div id="pieces" class="pieces"></div>
 </div>
 
@@ -448,8 +391,9 @@ input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cur
 const GRID_SIZE = 8;
 const TOTAL_CELLS = GRID_SIZE * GRID_SIZE;
 const MAX_GRACE = 2;
+// INCREASED DRAG LIFT FOR ONE-HANDED PLAY
+const DRAG_LIFT = 160; 
 
-// --- SHAPES ---
 const shapesMeta = [
     { w: 2, s: [[0,0]] }, 
     { w: 2, s: [[0,0],[1,0]] }, { w: 2, s: [[0,0],[0,1]] }, 
@@ -492,7 +436,7 @@ let gameState = {
     active: false
 };
 
-// --- AUDIO SYSTEM ---
+// --- AUDIO ---
 let audioCtx;
 let isSoundEnabled = true;
 const bgMusic = document.getElementById("bg-music");
@@ -520,7 +464,6 @@ let dragging = null;
 let dragOffsetX = 0, dragOffsetY = 0;
 let currentPalette = themes[0].colors;
 let isGameOverChecking = false;
-const DRAG_LIFT = 120;
 
 // --- INIT DOM ---
 const board = document.getElementById("board");
@@ -539,7 +482,6 @@ for(let i=0; i<TOTAL_CELLS; i++){
     board.appendChild(c);
 }
 
-// Init Floating Background
 initFloatingBlocks();
 
 const savedRaw = localStorage.getItem('farooqBlocksSave');
@@ -566,7 +508,6 @@ function initFloatingBlocks() {
         b.style.animationDuration = (Math.random() * 10 + 10) + 's';
         b.style.animationDelay = (Math.random() * 5) + 's';
         
-        // Color logic
         const col = colors[Math.floor(Math.random() * colors.length)];
         if(!b.classList.contains('shape-triangle')) {
             b.style.borderColor = col;
@@ -605,7 +546,7 @@ function startNewGame(mode = 'classic', time = 0) {
     });
     
     checkDanger();
-    updateBestScoreUI(); // Init Best Score
+    updateBestScoreUI();
     updateScoreUI();
     setupTimerUI();
     applyTheme(0);
@@ -666,8 +607,12 @@ function createPiece() {
     p.dataset.shape = JSON.stringify(shape);
     p.dataset.color = color;
     
-    const w = Math.max(...shape.map(b=>b[0])) + 1;
-    p.style.gridTemplateColumns = `repeat(${w}, auto)`;
+    // Auto-Shrink Logic for Big Blocks
+    const width = Math.max(...shape.map(b=>b[0])) + 1;
+    const height = Math.max(...shape.map(b=>b[1])) + 1;
+    if(width >= 3 || height >= 3) p.classList.add('huge');
+
+    p.style.gridTemplateColumns = `repeat(${width}, auto)`;
     
     shape.forEach(([x,y]) => {
       const b = document.createElement("div");
@@ -922,7 +867,6 @@ function addScore(pts) {
     const old = gameState.score;
     gameState.score += pts;
     updateScoreUI();
-    // THEME CHANGE THRESHOLD: 10,000
     if(Math.floor(gameState.score/10000) > Math.floor(old/10000)) applyTheme((gameState.themeIndex+1)%themes.length);
 }
 
@@ -933,7 +877,6 @@ function updateScoreUI() {
     void el.parentElement.offsetWidth;
     el.parentElement.classList.add("bump");
 
-    // Live update Best Score if beaten
     const hs = JSON.parse(localStorage.getItem('farooqHighscores')) || {};
     const key = gameState.mode === 'time' ? `time${gameState.timeTotal}` : 'classic';
     const currentBest = hs[key] || 0;
@@ -941,9 +884,8 @@ function updateScoreUI() {
         document.getElementById("bestDisplay").textContent = gameState.score;
     }
 
-    // Combo Logic
     if(gameState.combo > 1) {
-        board.classList.add('combo-active'); // PULSE EFFECT
+        board.classList.add('combo-active'); 
         comboBarWrap.style.opacity = 1;
         const pct = (gameState.comboGrace / MAX_GRACE) * 100;
         comboBar.style.width = pct + "%";
